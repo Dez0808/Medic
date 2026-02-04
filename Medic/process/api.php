@@ -370,7 +370,7 @@ elseif ($action === 'update_student' && $user_id) {
             age = $age,
             gender = '$gender',
             grade_section = '$grade_section',
-            contact_number = '$contact_number',
+            contact = '$contact_number',
             address = '$address'
             WHERE user_id = $user_id AND account_id = $account_id";
     

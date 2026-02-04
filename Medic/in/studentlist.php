@@ -1,6 +1,11 @@
+<?php
+
+session_start();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-<?php session_start(); ?>
 
 <head>
     <meta charset="UTF-8">
@@ -8,15 +13,31 @@
     <link href="../css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
         .active {
             display: block !important;
         }
 
+        .sidebar-container {
+            position: relative;
+            right: 115px;
+            margin-bottom: -10px;
+        }
+
         .container {
-            margin: auto;
-            padding: 10px;
-            width: 70%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 10px 0px 10px;
             min-height: 400px;
+
+        }
+
+        .table-main {
+            width: 100%;
         }
 
         /* Table */
@@ -29,6 +50,7 @@
             height: 60px;
             padding: 0 20px;
             gap: 20px;
+            background-color: white;
         }
 
         .header-filters {
@@ -70,6 +92,8 @@
             border-top: none;
             border-radius: 0px 0px 12px 12px;
             overflow-x: auto;
+            background-color: white;
+
         }
 
         table {
@@ -263,85 +287,90 @@
 </head>
 
 <body>
-    <?php include "../include/header.php" ?>
-    <main class="container mt-5">
-
-        <div class="table-header">
-            <div class="header-filters">
-                <select id="gradeFilter">
-                    <option value="">All Grades</option>
-                </select>
-                <select id="sectionFilter">
-                    <option value="">All Sections</option>
-                </select>
-                <select id="genderFilter">
-                    <option value="">All Genders</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
-            <div class="search">
-                <input type="text" class="search-bar" id="searchInput" placeholder="Search by name...">
-                <button class="search-btn" type="button"><i class="ri-search-line"></i></button>
-            </div>
+    <main class="container">
+        <div class="sidebar-container">
+            <?php include "../include/sidebar.php" ?>
         </div>
+        <div class="table-main">
 
-        <div class="table-container">
-            <table cellpadding="10" cellspacing="0" class="table" border="0">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">Photo</th>
-                        <th style="text-align: center; width: 30%;">Name</th>
-                        <th style="text-align: center; width: 12%;">Grade</th>
-                        <th style="text-align: center; width: 15%;">Section</th>
-                        <th style="text-align: center; width: 8%;">Age</th>
-                        <th style="text-align: center; width: 12%;">Gender</th>
-                        <th style="text-align: center; width: 18%;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="studentTableBody">
-                    <?php include "../include/db.php";
+            <div class="table-header">
+                <div class="header-filters">
+                    <select id="gradeFilter">
+                        <option value="">All Grades</option>
+                    </select>
+                    <select id="sectionFilter">
+                        <option value="">All Sections</option>
+                    </select>
+                    <select id="genderFilter">
+                        <option value="">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="search">
+                    <input type="text" class="search-bar" id="searchInput" placeholder="Search by name...">
+                    <button class="search-btn" type="button"><i class="ri-search-line"></i></button>
+                </div>
+            </div>
 
-                    if (!isset($_SESSION['account_id'])) {
-                        echo "<tr><td colspan='7'><strong>Please log in to view students.</strong></td></tr>";
-                    } else {
-                        $account_id = $_SESSION['account_id'];
-                        $sql = "SELECT * FROM user_info WHERE account_id = ?";
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bind_param("i", $account_id);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                $gradeSection = $row['grade_section'];
-                                $parts = explode(' - ', $gradeSection);
-                                $grade = trim($parts[0] ?? '');
-                                $section = trim($parts[1] ?? $gradeSection);
-                    ?>
+            <div class="table-container">
+                <table cellpadding="10" cellspacing="0" class="table" border="0">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">Photo</th>
+                            <th style="text-align: center; width: 30%;">Name</th>
+                            <th style="text-align: center; width: 12%;">Grade</th>
+                            <th style="text-align: center; width: 15%;">Section</th>
+                            <th style="text-align: center; width: 8%;">Age</th>
+                            <th style="text-align: center; width: 12%;">Gender</th>
+                            <th style="text-align: center; width: 18%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <?php include "../include/db.php";
 
-                                <tr>
-                                    <td><img src="../uploads/<?php echo htmlspecialchars($row['picture']); ?>" alt="Student" width="50" height="50" style="border-radius:50%;"></td>
-                                    <td style="text-transform: uppercase;"><?php echo htmlspecialchars($row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($grade); ?></td>
-                                    <td style="text-transform: uppercase;"><?php echo htmlspecialchars($section); ?></td>
-                                    <td><?php echo htmlspecialchars($row['age']); ?></td>
-                                    <td style="text-transform: uppercase;"><?php echo htmlspecialchars($row['gender']); ?></td>
-                                    <td id="table-button">
-                                        <button type="button" class="btn-action btn-view" onclick="anecdote(<?php echo $row['user_id']; ?>)">View</button>
-                                        <button type="button" class="btn-action btn-edit" onclick="openEditModal(<?php echo $row['user_id']; ?>)">Edit</button>
-                                    </td>
-                                </tr>
-
-                    <?php
-                            }
+                        if (!isset($_SESSION['account_id'])) {
+                            echo "<tr><td colspan='7'><strong>Please log in to view students.</strong></td></tr>";
                         } else {
-                            echo "<tr><td colspan='7' class='no-results'>No records found</td></tr>";
+                            $account_id = $_SESSION['account_id'];
+                            $sql = "SELECT * FROM user_info WHERE account_id = ?";
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("i", $account_id);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    $gradeSection = $row['grade_section'];
+                                    $parts = explode(' - ', $gradeSection);
+                                    $grade = trim($parts[0] ?? '');
+                                    $section = trim($parts[1] ?? $gradeSection);
+                        ?>
+
+                                    <tr>
+                                        <td><img src="../uploads/<?php echo htmlspecialchars($row['picture']); ?>" alt="Student" width="50" height="50" style="border-radius:50%;"></td>
+                                        <td style="text-transform: uppercase;"><?php echo htmlspecialchars($row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($grade); ?></td>
+                                        <td style="text-transform: uppercase;"><?php echo htmlspecialchars($section); ?></td>
+                                        <td><?php echo htmlspecialchars($row['age']); ?></td>
+                                        <td style="text-transform: uppercase;"><?php echo htmlspecialchars($row['gender']); ?></td>
+                                        <td id="table-button">
+                                            <button type="button" class="btn-action btn-view" onclick="anecdote(<?php echo $row['user_id']; ?>)">View</button>
+                                            <button type="button" class="btn-action btn-edit" onclick="openEditModal(<?php echo $row['user_id']; ?>)">Edit</button>
+                                        </td>
+                                    </tr>
+
+                        <?php
+                                }
+                            } else {
+                                echo "<tr><td colspan='7' class='no-results'>No records found</td></tr>";
+                            }
                         }
-                    }
-                    ?>
-                </tbody>
-            </table>
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </main>
 
     <!-- Edit Student Modal -->

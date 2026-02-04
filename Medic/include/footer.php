@@ -7,6 +7,15 @@
 
     <title>Document</title>
     <style>
+        :root {
+            --primary-color: green;
+            --secondary-color: blue;
+            --font-color: white;
+            --gradient-color: linear-gradient(90deg, rgb(10, 89, 52) 50%, rgb(55, 123, 77) 100%);
+            --input-color: #f1f1f1;
+            --shadow: 0 2px 5px rgba(0, 0, 0, 0.2)
+        }
+
         footer {
             background: var(--gradient-color);
             color: var(--font-color);

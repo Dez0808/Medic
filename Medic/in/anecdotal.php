@@ -6,6 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Information & Records</title>
+  <link href="../css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="..\js\bootstrap.bundle.min.js" />
   <style>
     * {
       margin: 0;
@@ -18,7 +20,15 @@
       background-color: #f5f5f5;
     }
 
+    .sidebar-container {
+      position: relative;
+      right: 100px;
+      margin-bottom: -10px;
+    }
+
     main {
+      display: flex;
+      justify-content: space-between;
       margin-left: 100px;
 
     }
@@ -155,6 +165,8 @@
       text-align: justify;
       box-shadow: var(--shadow);
       border-radius: 8px;
+      background-color: white;
+
     }
 
     #div2 {
@@ -163,11 +175,12 @@
       margin-left: 20px;
       margin-right: 35px;
       width: 282px;
-      height: 224px;
+      height: 300px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       box-shadow: var(--shadow);
+      background-color: white;
       border-radius: 8px;
     }
 
@@ -175,11 +188,12 @@
       grid-area: 3 / 3 / 5 / 5;
       padding: 10px;
       width: 282px;
-      height: 224px;
+      height: 300px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       box-shadow: var(--shadow);
+      background-color: white;
       border-radius: 8px;
     }
 
@@ -295,10 +309,12 @@
 </head>
 
 <body>
-  <?php include "../include/header.php" ?>
 
 
   <main>
+    <div class="sidebar-container">
+      <?php include "../include/sidebar.php" ?>
+    </div>
 
     <div class="container">
       <div class="info">
