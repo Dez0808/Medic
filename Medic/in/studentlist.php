@@ -13,6 +13,12 @@ session_start();
     <link href="../css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -24,20 +30,19 @@ session_start();
 
         .sidebar-container {
             position: relative;
-            right: 115px;
+            right: 112.5px;
             margin-bottom: -10px;
         }
 
         .container {
             display: flex;
             justify-content: space-between;
-            padding: 10px 10px 0px 10px;
-            min-height: 400px;
 
         }
 
         .table-main {
             width: 100%;
+            margin-top: 20px;
         }
 
         /* Table */
@@ -71,6 +76,8 @@ session_start();
             border: 1px solid #ccc;
             width: 250px;
             font-size: 14px;
+            margin-right: -35px;
+            padding-right: 35px;
         }
 
         .search-btn {
@@ -79,6 +86,7 @@ session_start();
             border: none;
             cursor: pointer;
             font-size: 18px;
+
         }
 
         .header-filters select:hover {
@@ -309,7 +317,9 @@ session_start();
                 </div>
                 <div class="search">
                     <input type="text" class="search-bar" id="searchInput" placeholder="Search by name...">
-                    <button class="search-btn" type="button"><i class="ri-search-line"></i></button>
+                    <button class="search-btn" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                        </svg></button>
                 </div>
             </div>
 

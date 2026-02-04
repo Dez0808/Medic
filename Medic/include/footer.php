@@ -122,7 +122,7 @@
         </div>
         <div class="col mb-3"></div>
         <div class="col mb-3">
-            <h5>Contact Info</h5>
+            <!-- <h5>Contact Info</h5>
             <ul class="nav flex-column">
                 <li class="nav-item mb-2">
                     <a href="#" class="nav-link p-0 ">Home</a>
@@ -160,7 +160,7 @@
                     <a href="#" class="nav-link p-0 ">About</a>
                 </li>
             </ul>
-        </div>
+        </div> -->
 
     </footer>
 </body>

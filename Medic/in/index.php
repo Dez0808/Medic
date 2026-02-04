@@ -39,6 +39,7 @@
             margin: auto;
             padding: 40px;
             background-color: white;
+            margin-top: 20px;
 
         }
 
@@ -117,7 +118,7 @@
             <?php include '../include/sidebar.php'; ?>
         </div>
 
-        <main class="mt-5 mb-5">
+        <main class="mb-5">
             <form action="../process/insert.php" method="post" enctype="multipart/form-data">
 
                 <div class="container">
@@ -132,16 +133,18 @@
                             <td>GRADE & SECTION: </td>
                         </tr>
                         <tr>
-                            <td><input type="number" name="lrn"> </td>
-                            <td><input type="text" name="grade_section"> </td>
+                            <td><input type="number" name="lrn" required> </td>
+                            <td>
+                                <input type="text" name="grade_section" placeholder="e.g., Grade 7 - A" required>
+                            </td>
                         </tr>
                         <tr>
                             <td>FIRST NAME: </td>
                             <td>ADDRESS: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="first_name"> </td>
-                            <td><input type="text" name="address"> </td>
+                            <td><input type="text" name="first_name" required> </td>
+                            <td><input type="text" name="address" required> </td>
                         </tr>
                         <tr>
                             <td>MIDDLE NAME: </td>
@@ -149,15 +152,15 @@
                         </tr>
                         <tr>
                             <td><input type="text" name="middle_name"> </td>
-                            <td><input type="number" name="contact_no"> </td>
+                            <td><input type="number" name="contact_no" min="11" max="13" required> </td>
                         </tr>
                         <tr>
                             <td>LAST NAME: </td>
                             <td>EMAIL: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="last_name"> </td>
-                            <td><input type="email" name="email"> </td>
+                            <td><input type="text" name="last_name" required> </td>
+                            <td><input type="email" name="email" required> </td>
                         </tr>
                         <tr>
                             <td>PROFILE PICTURE: </td>
@@ -165,19 +168,19 @@
                         </tr>
                         <tr>
                             <td><input type="file" name="profile_picture"> </td>
-                            <td><input type="date" name="birth_date"> </td>
+                            <td><input type="date" name="birth_date" id="birth" required> </td>
                         </tr>
                         <tr>
                             <td>GENDER: </td>
                             <td>AGE: </td>
                         </tr>
                         <tr>
-                            <td><select name="gender" id="">
+                            <td><select name="gender" id="" required>
                                     <option value=""></option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select> </td>
-                            <td><input type="number" name="age"> </td>
+                            <td><input type="number" name="age" id="age" readonly> </td>
                         </tr>
                     </table>
                 </div>
@@ -192,13 +195,13 @@
                             <td>GUARDIAN NAME: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="guardian_name"> </td>
+                            <td><input type="text" name="guardian_name" required> </td>
                         </tr>
                         <tr>
                             <td>CONTACT NO.: </td>
                         </tr>
                         <tr>
-                            <td><input type="number" name="guardian_contact"> </td>
+                            <td><input type="number" name="guardian_contact" min="11" max="13" required> </td>
                         </tr>
                         <tr>
                             <td>ADDRESS: </td>
@@ -242,6 +245,40 @@
 
 
     <?php include '../include/footer.php'; ?>
+
+    <script>
+        const birthInput = document.getElementById('birth');
+        const ageInput = document.getElementById('age');
+        const gradeSection = document.querySelector('input[name="grade_section"]');
+
+        // Age calculation
+        if (birthInput && ageInput) {
+            birthInput.addEventListener('change', function() {
+                if (this.value) {
+                    const birthDate = new Date(this.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+
+                    ageInput.value = age;
+                } else {
+                    ageInput.value = '';
+                }
+            });
+        }
+
+        // Grade & Section normalization
+        if (gradeSection) {
+            gradeSection.addEventListener('blur', function() {
+                let normalized = this.value.trim().replace(/\s*-\s*/g, ' - ');
+                this.value = normalized;
+            });
+        }
+    </script>
 </body>
 
 </html>
