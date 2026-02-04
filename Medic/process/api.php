@@ -31,6 +31,18 @@ if (!$action) {
     die(json_encode(['error' => 'No action specified']));
 }
 
+// Check user role
+if ($action === 'check_role') {
+    $roleCheck = $conn->query("SELECT role FROM registered_accounts WHERE account_id = $account_id");
+    if ($roleCheck->num_rows === 0) {
+        echo json_encode(['role' => 'teacher']);
+        exit;
+    }
+    $roleRow = $roleCheck->fetch_assoc();
+    echo json_encode(['role' => $roleRow['role'] ?? 'teacher']);
+    exit;
+}
+
 // Get all students
 if ($action === 'get_all_students') {
     $result = $conn->query("SELECT user_id, first_name, middle_name, last_name FROM user_info ORDER BY first_name ASC");
@@ -65,12 +77,14 @@ if ($action === 'get_records' && $user_id) {
         echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
         exit;
     }
-    $result = $conn->query("SELECT record_id, record_text, created_at FROM anecdotal_records WHERE user_id = $user_id ORDER BY created_at DESC");
+    
+    $result = $conn->query("SELECT ar.record_id, ar.record_text, ar.created_at, ra.first_name, ra.last_name FROM anecdotal_records ar LEFT JOIN registered_accounts ra ON ar.account_id = ra.account_id WHERE ar.user_id = $user_id ORDER BY ar.created_at DESC");
     $records = [];
     while ($row = $result->fetch_assoc()) {
         $records[] = $row;
     }
     echo json_encode(['records' => $records]);
+    exit;
 }
 
 // Save Anecdotal Record
@@ -83,6 +97,21 @@ elseif ($action === 'save_record' && $user_id) {
         exit;
     }
     
+    // Check user role - only teachers and admins can add anecdotal records
+    $roleCheck = $conn->query("SELECT role FROM registered_accounts WHERE account_id = $account_id");
+    if ($roleCheck->num_rows === 0) {
+        echo json_encode(['error' => 'User role not found']);
+        exit;
+    }
+    
+    $roleRow = $roleCheck->fetch_assoc();
+    $userRole = $roleRow['role'];
+    
+    if ($userRole === 'doctor') {
+        echo json_encode(['error' => 'Doctors do not have permission to add anecdotal records']);
+        exit;
+    }
+    
     $record_text = $conn->real_escape_string($_POST['record_text'] ?? '');
     
     if (empty($record_text)) {
@@ -90,12 +119,13 @@ elseif ($action === 'save_record' && $user_id) {
         exit;
     }
     
-    $sql = "INSERT INTO anecdotal_records (user_id, record_text) VALUES ($user_id, '$record_text')";
+    $sql = "INSERT INTO anecdotal_records (user_id, record_text, account_id) VALUES ($user_id, '$record_text', $account_id)";
     if ($conn->query($sql)) {
         echo json_encode(['success' => true, 'message' => 'Record saved']);
     } else {
         echo json_encode(['error' => $conn->error]);
     }
+    exit;
 }
 
 // Get Behavioral Notes
@@ -232,6 +262,124 @@ elseif ($action === 'delete_medication') {
     } else {
         echo json_encode(['error' => $conn->error]);
     }
+}
+
+// Search Students
+elseif ($action === 'search_students') {
+    $search = $conn->real_escape_string($_GET['search'] ?? '');
+    $grade = $conn->real_escape_string($_GET['grade'] ?? '');
+    $section = $conn->real_escape_string($_GET['section'] ?? '');
+    $gender = $conn->real_escape_string($_GET['gender'] ?? '');
+    
+    $where = "WHERE account_id = $account_id";
+    
+    if (!empty($search)) {
+        $where .= " AND (first_name LIKE '%$search%' OR middle_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%')";
+    }
+    
+    if (!empty($grade)) {
+        $where .= " AND grade_section LIKE '$grade%'";
+    }
+    
+    if (!empty($section)) {
+        $where .= " AND grade_section LIKE '%$section'";
+    }
+    
+    if (!empty($gender)) {
+        $where .= " AND gender = '$gender'";
+    }
+    
+    $result = $conn->query("SELECT user_id, first_name, middle_name, last_name, grade_section, age, gender, picture FROM user_info $where ORDER BY first_name ASC");
+    $students = [];
+    
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $students[] = $row;
+        }
+    }
+    
+    echo json_encode(['students' => $students]);
+    exit;
+}
+
+// Get Grades and Sections
+elseif ($action === 'get_grades_sections') {
+    $result = $conn->query("SELECT DISTINCT grade_section FROM user_info WHERE account_id = $account_id ORDER BY grade_section ASC");
+    $grades = [];
+    $sections = [];
+    
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $gradeSection = $row['grade_section'];
+            $parts = explode(' - ', $gradeSection);
+            $grade = trim($parts[0] ?? '');
+            $section = trim($parts[1] ?? '');
+            
+            if (!empty($grade) && !in_array($grade, $grades)) {
+                $grades[] = $grade;
+            }
+            
+            if (!empty($section) && !in_array($section, $sections)) {
+                $sections[] = $section;
+            }
+        }
+    }
+    
+    echo json_encode(['grades' => $grades, 'sections' => $sections]);
+    exit;
+}
+
+// Update Student
+elseif ($action === 'update_student' && $user_id) {
+    $user_id = intval($user_id);
+    
+    // Verify student belongs to logged-in account
+    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
+    if ($verify->num_rows === 0) {
+        echo json_encode(['error' => 'Unauthorized: This student does not belong to your account']);
+        exit;
+    }
+    
+    // Get POST data
+    $first_name = $conn->real_escape_string($_POST['first_name'] ?? '');
+    $middle_name = $conn->real_escape_string($_POST['middle_name'] ?? '');
+    $last_name = $conn->real_escape_string($_POST['last_name'] ?? '');
+    $email = $conn->real_escape_string($_POST['email'] ?? '');
+    $age = intval($_POST['age'] ?? 0);
+    $gender = $conn->real_escape_string($_POST['gender'] ?? '');
+    $grade = $conn->real_escape_string($_POST['grade'] ?? '');
+    $section = $conn->real_escape_string($_POST['section'] ?? '');
+    $contact_number = $conn->real_escape_string($_POST['contact_number'] ?? '');
+    $address = $conn->real_escape_string($_POST['address'] ?? '');
+    
+    // Combine grade and section
+    $grade_section = "$grade - $section";
+    
+    // Validate required fields
+    if (empty($first_name) || empty($last_name) || empty($email)) {
+        echo json_encode(['error' => 'First name, last name, and email are required']);
+        exit;
+    }
+    
+    // Update query
+    $sql = "UPDATE user_info SET 
+            first_name = '$first_name',
+            middle_name = '$middle_name',
+            last_name = '$last_name',
+            email = '$email',
+            age = $age,
+            gender = '$gender',
+            grade_section = '$grade_section',
+            contact_number = '$contact_number',
+            address = '$address'
+            WHERE user_id = $user_id AND account_id = $account_id";
+    
+    if ($conn->query($sql)) {
+        echo json_encode(['success' => true, 'message' => 'Student updated successfully']);
+    } else {
+        echo json_encode(['error' => $conn->error]);
+    }
+    exit;
 }
 
 $conn->close();

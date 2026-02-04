@@ -382,12 +382,33 @@
   <script>
     let currentUserId = null;
     let allStudents = [];
+    let userRole = 'teacher';
 
     // Load students on page load
     document.addEventListener('DOMContentLoaded', () => {
+      checkUserRole();
       loadStudents();
       setupSearchListener();
     });
+
+    // Check user role from API
+    function checkUserRole() {
+      fetch('../process/api.php?action=check_role')
+        .then(response => response.json())
+        .then(data => {
+          if (data.role) {
+            userRole = data.role;
+            const saveBtn = document.querySelector('button[onclick="saveAnecdotalRecord()"]');
+            if (userRole === 'doctor') {
+              saveBtn.disabled = true;
+              saveBtn.title = 'Doctors cannot add anecdotal records';
+              saveBtn.style.opacity = '0.5';
+              saveBtn.style.cursor = 'not-allowed';
+            }
+          }
+        })
+        .catch(error => console.error('Error checking role:', error));
+    }
 
     // Load all students for search
     function loadStudents() {
@@ -484,6 +505,11 @@
 
     // Save anecdotal record
     function saveAnecdotalRecord() {
+      if (userRole === 'doctor') {
+        alert('Doctors do not have permission to add anecdotal records');
+        return;
+      }
+
       const text = document.getElementById('anecdotal-text').value.trim();
       if (!text) {
         alert('Please enter an anecdotal record');

@@ -234,7 +234,8 @@
                             const dateDiv = document.createElement('div');
                             dateDiv.className = 'record-date';
                             const recordDate = new Date(record.created_at);
-                            dateDiv.textContent = `Recorded on ${recordDate.toLocaleDateString()} at ${recordDate.toLocaleTimeString()}`;
+                            const staffName = record.first_name && record.last_name ? `${record.first_name} ${record.last_name}` : 'Unknown';
+                            dateDiv.textContent = `Recorded on ${recordDate.toLocaleDateString()} at ${recordDate.toLocaleTimeString()} by ${staffName}`;
                             
                             const textDiv = document.createElement('div');
                             textDiv.className = 'record-text';
