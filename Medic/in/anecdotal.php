@@ -540,6 +540,7 @@
       formData.append('action', 'save_record');
       formData.append('user_id', currentUserId);
       formData.append('record_text', text);
+      formData.append('source', 'anecdotal');
 
       fetch('../process/api.php', {
           method: 'POST',
@@ -594,6 +595,7 @@
       formData.append('action', 'add_behavioral_note');
       formData.append('user_id', currentUserId);
       formData.append('note_text', text);
+      formData.append('source', 'anecdotal');
 
       fetch('../process/api.php', {
           method: 'POST',
@@ -690,6 +692,7 @@
       formData.append('action', 'add_medication');
       formData.append('user_id', currentUserId);
       formData.append('medication_name', text);
+      formData.append('source', 'anecdotal');
 
       fetch('../process/api.php', {
           method: 'POST',

@@ -26,6 +26,7 @@ if (!isset($_SESSION['account_id'])) {
 $account_id = $_SESSION['account_id'];
 $action = $_GET['action'] ?? $_POST['action'] ?? null;
 $user_id = $_GET['user_id'] ?? $_POST['user_id'] ?? null;
+$source = $_GET['source'] ?? $_POST['source'] ?? 'studentlist'; // Default to 'studentlist', can be 'anecdotal'
 
 if (!$action) {
     die(json_encode(['error' => 'No action specified']));
@@ -43,7 +44,7 @@ if ($action === 'check_role') {
     exit;
 }
 
-// Get all students
+// Get all students (for anecdotal page search - no account restriction)
 if ($action === 'get_all_students') {
     $result = $conn->query("SELECT user_id, first_name, middle_name, last_name FROM user_info ORDER BY first_name ASC");
     $students = [];
@@ -54,13 +55,13 @@ if ($action === 'get_all_students') {
     exit;
 }
 
-// Get single student info
+// Get single student info (for anecdotal page - allows viewing any student)
 if ($action === 'get_student_info' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account
-    $result = $conn->query("SELECT * FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
+    // In anecdotal page, allow viewing any student's basic info
+    $result = $conn->query("SELECT * FROM user_info WHERE user_id = $user_id");
     if ($result->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
+        echo json_encode(['error' => 'Student not found']);
         exit;
     }
     $student = $result->fetch_assoc();
@@ -68,16 +69,10 @@ if ($action === 'get_student_info' && $user_id) {
     exit;
 }
 
-// Get Anecdotal Records
+// Get Anecdotal Records (allow viewing all records for any student)
 if ($action === 'get_records' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account before returning records
-    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
-    if ($verify->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
-        exit;
-    }
-    
+    // Allow viewing all anecdotal records for any student (no account restriction)
     $result = $conn->query("SELECT ar.record_id, ar.record_text, ar.created_at, ra.first_name, ra.last_name FROM anecdotal_records ar LEFT JOIN registered_accounts ra ON ar.account_id = ra.account_id WHERE ar.user_id = $user_id ORDER BY ar.created_at DESC");
     $records = [];
     while ($row = $result->fetch_assoc()) {
@@ -90,12 +85,16 @@ if ($action === 'get_records' && $user_id) {
 // Save Anecdotal Record
 elseif ($action === 'save_record' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account
-    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
-    if ($verify->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
-        exit;
+    
+    // If from studentlist page, verify student belongs to logged-in account
+    if ($source === 'studentlist') {
+        $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
+        if ($verify->num_rows === 0) {
+            echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
+            exit;
+        }
     }
+    // If from anecdotal page, allow any student (source === 'anecdotal')
     
     // Check user role - only teachers and admins can add anecdotal records
     $roleCheck = $conn->query("SELECT role FROM registered_accounts WHERE account_id = $account_id");
@@ -128,15 +127,10 @@ elseif ($action === 'save_record' && $user_id) {
     exit;
 }
 
-// Get Behavioral Notes
+// Get Behavioral Notes (allow viewing for any student)
 elseif ($action === 'get_behavioral_notes' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account
-    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
-    if ($verify->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
-        exit;
-    }
+    // Allow viewing behavioral notes for any student (no account restriction)
     $result = $conn->query("SELECT note_id, note_text, is_completed FROM behavioral_notes WHERE user_id = $user_id ORDER BY created_at DESC");
     $notes = [];
     while ($row = $result->fetch_assoc()) {
@@ -148,12 +142,16 @@ elseif ($action === 'get_behavioral_notes' && $user_id) {
 // Add Behavioral Note
 elseif ($action === 'add_behavioral_note' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account
-    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
-    if ($verify->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
-        exit;
+    
+    // If from studentlist page, verify student belongs to logged-in account
+    if ($source === 'studentlist') {
+        $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
+        if ($verify->num_rows === 0) {
+            echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
+            exit;
+        }
     }
+    // If from anecdotal page, allow any student (source === 'anecdotal')
     
     $note_text = $conn->real_escape_string($_POST['note_text'] ?? '');
     
@@ -196,15 +194,10 @@ elseif ($action === 'delete_behavioral_note') {
     }
 }
 
-// Get Medications
+// Get Medications (allow viewing for any student)
 elseif ($action === 'get_medications' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account
-    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
-    if ($verify->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
-        exit;
-    }
+    // Allow viewing medications for any student (no account restriction)
     $result = $conn->query("SELECT medication_id, medication_name, is_completed FROM medications WHERE user_id = $user_id ORDER BY created_at DESC");
     $medications = [];
     while ($row = $result->fetch_assoc()) {
@@ -216,12 +209,16 @@ elseif ($action === 'get_medications' && $user_id) {
 // Add Medication
 elseif ($action === 'add_medication' && $user_id) {
     $user_id = intval($user_id);
-    // Verify student belongs to logged-in account
-    $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
-    if ($verify->num_rows === 0) {
-        echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
-        exit;
+    
+    // If from studentlist page, verify student belongs to logged-in account
+    if ($source === 'studentlist') {
+        $verify = $conn->query("SELECT user_id FROM user_info WHERE user_id = $user_id AND account_id = $account_id");
+        if ($verify->num_rows === 0) {
+            echo json_encode(['error' => 'Unauthorized: This patient does not belong to your account']);
+            exit;
+        }
     }
+    // If from anecdotal page, allow any student (source === 'anecdotal')
     
     $medication_name = $conn->real_escape_string($_POST['medication_name'] ?? '');
     
