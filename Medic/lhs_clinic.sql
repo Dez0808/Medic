@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 12, 2026 at 11:14 PM
+-- Generation Time: Feb 13, 2026 at 03:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,8 @@ CREATE TABLE `anecdotal_records` (
 INSERT INTO `anecdotal_records` (`record_id`, `user_id`, `record_text`, `created_at`, `updated_at`, `account_id`) VALUES
 (1, 1, 'Baliw', '2026-02-02 15:34:51', '2026-02-02 15:34:51', 0),
 (2, 1, 'dasdasd', '2026-02-02 15:45:18', '2026-02-02 15:45:18', 1),
-(3, 1, 'Baliw parin', '2026-02-08 12:32:10', '2026-02-08 12:32:10', 2);
+(3, 1, 'Baliw parin', '2026-02-08 12:32:10', '2026-02-08 12:32:10', 2),
+(4, 4, 'Baliw', '2026-02-13 14:11:21', '2026-02-13 14:11:21', 1);
 
 -- --------------------------------------------------------
 
@@ -185,6 +186,47 @@ INSERT INTO `report` (`id`, `topic`, `message`, `contact`, `added`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sample`
+--
+
+CREATE TABLE `sample` (
+  `user_id` int(11) NOT NULL,
+  `lrn` varchar(50) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `middle_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `grade_section` varchar(50) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `contact` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `birth_date` date NOT NULL,
+  `gender` varchar(50) NOT NULL,
+  `age` int(50) NOT NULL,
+  `guardian_name` varchar(50) NOT NULL,
+  `guardian_no` varchar(50) NOT NULL,
+  `guardian_address` varchar(50) NOT NULL,
+  `guardian_email` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sample`
+--
+
+INSERT INTO `sample` (`user_id`, `lrn`, `first_name`, `middle_name`, `last_name`, `grade_section`, `address`, `contact`, `email`, `birth_date`, `gender`, `age`, `guardian_name`, `guardian_no`, `guardian_address`, `guardian_email`) VALUES
+(1, '101234567890', 'John', 'Miguel', 'Santos', '10 - Oxygen', '123 Main St', '09171234567', 'john.santos@gmail.com', '2008-05-15', 'Male', 16, 'Maria Santos', '09175555555', '123 Main St', 'maria.santos@gmail.com'),
+(2, '102345678901', 'Maria', 'Anne', 'Garcia', '11 - Nitrogen', '456 Oak Ave', '09172234567', 'maria.garcia@gmail.com', '2007-08-20', 'Female', 17, 'Carlos Garcia', '09176666666', '456 Oak Ave', 'carlos.garcia@gmail.com'),
+(3, '103456789012', 'Jose', 'Luis', 'Cruz', '9 - Carbon', '789 Pine Rd', '09173234567', 'jose.cruz@gmail.com', '2009-03-10', 'Male', 15, 'Rosa Cruz', '09177777777', '789 Pine Rd', 'rosa.cruz@gmail.com'),
+(4, '104567890123', 'Anna', 'Catherine', 'Reyes', '12 - Hydrogen', '321 Elm St', '09174234567', 'anna.reyes@gmail.com', '2006-11-25', 'Female', 18, 'Juan Reyes', '09178888888', '321 Elm St', 'juan.reyes@gmail.com'),
+(5, '105678901234', 'Pedro', 'Manuel', 'Gonzalez', '10 - Oxygen', '654 Birch Ln', '09175234567', 'pedro.gonzalez@gmail.com', '2008-07-08', 'Male', 16, 'Teresa Gonzalez', '09179999999', '654 Birch Ln', 'teresa.gonzalez@gmail.com'),
+(6, '106789012345', 'Angela', 'Rose', 'Lopez', '11 - Nitrogen', '987 Maple Dr', '09176234567', 'angela.lopez@gmail.com', '2007-01-12', 'Female', 17, 'Miguel Lopez', '09180000000', '987 Maple Dr', 'miguel.lopez@gmail.com'),
+(7, '107890123456', 'Roberto', 'David', 'Flores', '9 - Carbon', '159 Cedar St', '09177234567', 'roberto.flores@gmail.com', '2009-09-19', 'Male', 15, 'Sofia Flores', '09181111111', '159 Cedar St', 'sofia.flores@gmail.com'),
+(8, '108901234567', 'Lucia', 'Gabriela', 'Martinez', '12 - Hydrogen', '753 Spruce Ave', '09178234567', 'lucia.martinez@gmail.com', '2006-04-30', 'Female', 18, 'Antonio Martinez', '09182222222', '753 Spruce Ave', 'antonio.martinez@gmail.com'),
+(9, '109012345678', 'Francisco', 'Vicente', 'Morales', '10 - Oxygen', '852 Willow Rd', '09179234567', 'francisco.morales@gmail.com', '2008-12-05', 'Male', 16, 'Isabel Morales', '09183333333', '852 Willow Rd', 'isabel.morales@gmail.com'),
+(10, '110123456789', 'Isabelle', 'Carmen', 'Gutierrez', '11 - Nitrogen', '456 Ash Ln', '09180234567', 'isabelle.gutierrez@gmail.com', '2007-06-14', 'Female', 17, 'Pedro Gutierrez', '09184444444', '456 Ash Ln', 'pedro.gutierrez@gmail.com');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user_info`
 --
 
@@ -208,17 +250,18 @@ CREATE TABLE `user_info` (
   `guardian_email` varchar(50) NOT NULL,
   `allergies` varchar(100) NOT NULL,
   `med_condition` varchar(100) NOT NULL,
-  `picture` varchar(100) NOT NULL,
-  `role` varchar(20) NOT NULL
+  `picture` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user_info`
 --
 
-INSERT INTO `user_info` (`user_id`, `account_id`, `lrn`, `first_name`, `middle_name`, `last_name`, `grade_section`, `address`, `contact`, `email`, `birth_date`, `gender`, `age`, `guardian_name`, `guardian_no`, `guardian_address`, `guardian_email`, `allergies`, `med_condition`, `picture`, `role`) VALUES
-(1, 1, '136536130601', 'Dezcartes Rey', 'Ferrer', 'Bermudez', '12 - Rossum', 'Bahay', '09498597674', 'dezcartesb@gmail.com', '2004-08-08', 'Male', 21, '123', '123', '123', '123@gmail.com', 'Human', 'Baliw', '1.jpg', 'teacher'),
-(2, 1, '123123123123', 'Dez', 'Rey', 'Ber', '10 - Magnesium', 'bahay', '9193691288', 'email@gmail.com', '2004-08-08', 'Male', 21, 'Nanay', '9498597674', 'bahayparin', 'emailulit@gmail.com', 'tao', 'nabaliw ulit', '597831642_874564885077313_4324350714996628323_n.jpg', '');
+INSERT INTO `user_info` (`user_id`, `account_id`, `lrn`, `first_name`, `middle_name`, `last_name`, `grade_section`, `address`, `contact`, `email`, `birth_date`, `gender`, `age`, `guardian_name`, `guardian_no`, `guardian_address`, `guardian_email`, `allergies`, `med_condition`, `picture`) VALUES
+(1, 1, '136536130601', 'Dezcartes Rey', 'Ferrer', 'Bermudez', '12 - Rossum', 'Bahay', '09498597674', 'dezcartesb@gmail.com', '2004-08-08', 'Male', 21, '123', '123', '123', '123@gmail.com', 'Human', 'Baliw', '1.jpg'),
+(2, 1, '123123123123', 'Dez', 'Rey', 'Ber', '10 - Magnesium', 'bahay', '9193691288', 'email@gmail.com', '2004-08-08', 'Male', 21, 'Nanay', '9498597674', 'bahayparin', 'emailulit@gmail.com', 'tao', 'nabaliw ulit', '597831642_874564885077313_4324350714996628323_n.jpg'),
+(3, 1, '103456789012', 'Jose', 'Luis', 'Cruz', '9 - Carbon', '789 Pine Rd', '9173234567', 'jose.cruz@gmail.com', '2009-03-10', 'Male', 16, 'Rosa Cruz', '9177777777', '789 Pine Rd', 'rosa.cruz@gmail.com', 'Test', 'test', '1.jpg'),
+(4, 1, '101234567890', 'John', 'Miguel', 'Santos', '10 - Oxygen', '123 Main St', '9171234567', 'john.santos@gmail.com', '2008-05-15', 'Male', 17, 'Maria Santos', '9175555555', '123 Main St', 'maria.santos@gmail.com', 'Test 2', 'test 2', 'RobloxScreenShot20250824_183343519.png');
 
 --
 -- Indexes for dumped tables
@@ -270,6 +313,12 @@ ALTER TABLE `report`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `sample`
+--
+ALTER TABLE `sample`
+  ADD PRIMARY KEY (`user_id`);
+
+--
 -- Indexes for table `user_info`
 --
 ALTER TABLE `user_info`
@@ -284,7 +333,7 @@ ALTER TABLE `user_info`
 -- AUTO_INCREMENT for table `anecdotal_records`
 --
 ALTER TABLE `anecdotal_records`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `behavioral_notes`
@@ -323,10 +372,16 @@ ALTER TABLE `report`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT for table `sample`
+--
+ALTER TABLE `sample`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `user_info`
 --
 ALTER TABLE `user_info`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -32,6 +32,44 @@ if (!$action) {
     die(json_encode(['error' => 'No action specified']));
 }
 
+// Search sample table by LRN
+if ($action === 'search_sample') {
+    $lrn = $conn->real_escape_string($_GET['lrn'] ?? '');
+    
+    if (empty($lrn)) {
+        echo json_encode(['error' => 'LRN is required']);
+        exit;
+    }
+    
+    // Search for students whose LRN starts with the input (for dropdown suggestions)
+    $result = $conn->query("SELECT * FROM sample WHERE lrn LIKE '$lrn%' ORDER BY last_name ASC");
+    $students = [];
+    while ($row = $result->fetch_assoc()) {
+        $students[] = $row;
+    }
+    echo json_encode(['students' => $students]);
+    exit;
+}
+
+// Get single student from sample table by exact LRN
+if ($action === 'get_sample_student') {
+    $lrn = $conn->real_escape_string($_GET['lrn'] ?? '');
+    
+    if (empty($lrn)) {
+        echo json_encode(['error' => 'LRN is required']);
+        exit;
+    }
+    
+    $result = $conn->query("SELECT * FROM sample WHERE lrn = '$lrn'");
+    if ($result->num_rows === 0) {
+        echo json_encode(['error' => 'Student not found']);
+        exit;
+    }
+    $student = $result->fetch_assoc();
+    echo json_encode(['student' => $student]);
+    exit;
+}
+
 // Check user role
 if ($action === 'check_role') {
     $roleCheck = $conn->query("SELECT role FROM registered_accounts WHERE account_id = $account_id");

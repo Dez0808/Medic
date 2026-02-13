@@ -498,6 +498,7 @@
                             <tr>
                                 <th>Patient Name</th>
                                 <th>Illness</th>
+                                <th>Date</th>
                                 <th>Time In</th>
                                 <th>Time Out</th>
                                 <th>Status</th>
@@ -549,9 +550,9 @@
                     <div class="info-value" id="viewVisits">-</div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <!-- <div class="modal-footer">
                 <button class="btn-modal-cancel" onclick="closeViewModal()">Close</button>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -594,7 +595,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-modal-cancel" onclick="closeDischargeModal()">Cancel</button>
+                <button class="btn-modal-cancel" type="reset" onclick="resetDischargeForm();">Reset</button>
                 <button class="btn-modal-confirm" id="btnConfirmDischarge" onclick="confirmDischarge()">Confirm Discharge</button>
             </div>
         </div>
@@ -629,18 +630,21 @@
             }, 16);
         }
 
-        // Format datetime string
+        // Format datetime string - returns separate date and time
         function formatDate(dt) {
-            if (!dt || dt === '0000-00-00 00:00:00') return '-';
+            if (!dt || dt === '0000-00-00 00:00:00') return { date: '-', time: '-' };
             const d = new Date(dt);
-            return d.toLocaleString('en-US', {
+            const dateStr = d.toLocaleString('en-US', {
                 month: 'short',
                 day: 'numeric',
-                year: 'numeric',
+                year: 'numeric'
+            });
+            const timeStr = d.toLocaleString('en-US', {
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true
             });
+            return { date: dateStr, time: timeStr };
         }
 
         /* ===== View Modal ===== */
@@ -686,6 +690,13 @@
         function closeDischargeModal() {
             document.getElementById('dischargeModal').classList.remove('active');
             dischargeConfinedId = null;
+        }
+
+        function resetDischargeForm() {
+            document.getElementById('guardianName').value = '';
+            document.getElementById('guardianContact').value = '';
+            document.getElementById('guardianAddress').value = '';
+            document.getElementById('guardianRelationship').value = '';
         }
 
         function confirmDischarge() {
@@ -798,7 +809,7 @@
                     const tbody = document.getElementById('patientsTableBody');
 
                     if (patientsData.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="8" class="loading-text">No confined patients found.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="10" class="loading-text">No confined patients found.</td></tr>';
                     } else {
                         tbody.innerHTML = '';
                         patientsData.forEach(p => {
@@ -813,12 +824,16 @@
                                 '<button class="btn-discharge" disabled>Discharged</button>' :
                                 `<button class="btn-discharge" onclick="openDischargeModal(${p.confined_id})">Discharge</button>`;
 
+                            const confinementDateTime = formatDate(p.confinement);
+                            const dischargedDateTime = formatDate(p.discharged);
+
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
                                 <td>${fullName}</td>
                                 <td style="text-transform: uppercase;">${p.illness || '-'}</td>
-                                <td>${formatDate(p.confinement)}</td>
-                                <td>${formatDate(p.discharged)}</td>
+                                <td>${confinementDateTime.date}</td>
+                                <td>${confinementDateTime.time}</td>
+                                <td>${dischargedDateTime.time}</td>
                                 <td>${statusBadge}</td>
                                 <td>${viewBtn}${dischargeBtn}</td>
                             `;

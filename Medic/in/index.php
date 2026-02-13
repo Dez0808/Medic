@@ -101,7 +101,7 @@
             padding: 3px;
             box-sizing: border-box;
             border-radius: 8px;
-            border:none;
+            border: none;
             resize: vertical;
             background-color: var(--input-color);
             box-shadow: var(--shadow);
@@ -121,6 +121,70 @@
             box-shadow: 0px 5px 3px 0px rgba(0, 0, 0, 0.2);
         }
 
+        /* LRN Search Styles */
+        .lrn-search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .lrn-search-wrapper input[type="text"] {
+            flex: 1;
+        }
+
+        .lrn-search-wrapper button {
+            white-space: nowrap;
+        }
+
+        .lrn-search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #999;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .lrn-search-dropdown .lrn-result-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .lrn-search-dropdown .lrn-result-item:hover {
+            background-color: #e8f5e9;
+        }
+
+        .lrn-search-dropdown .lrn-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .lrn-result-item .lrn-number {
+            font-weight: bold;
+            color: rgb(10, 89, 52);
+        }
+
+        .lrn-result-item .lrn-name {
+            color: #555;
+            font-size: 13px;
+        }
+
+        .lrn-no-result {
+            padding: 10px 12px;
+            color: #999;
+            font-style: italic;
+            font-size: 14px;
+        }
+
         #home::after {
             width: 100%;
         }
@@ -134,13 +198,6 @@
             background-color: rgb(126, 43, 45);
             border-color: rgb(126, 43, 45);
         }
-
-        .btn{
-            float: right;
-            margin: 5px 6px 15px 6px;
-            width: 10rem;
-        }
-
     </style>
 </head>
 
@@ -167,9 +224,15 @@
                             <td>GRADE & SECTION: </td>
                         </tr>
                         <tr>
-                            <td><input type="number" name="lrn" oninput="if(this.value.length > 12) this.value = this.value.slice(0, 12);" required autocomplete="off"> </td>
+                            <!-- <td><input type="number" name="lrn" id="lrn-field" oninput="if(this.value.length > 12) this.value = this.value.slice(0, 12);" required autocomplete="off"> </td> -->
                             <td>
-                                <input type="text" name="grade_section" placeholder="e.g., Grade 7 - A" required autocomplete="off">
+                                <div class="lrn-search-wrapper">
+                                    <input type="text" id="lrn-search-input" name="lrn" placeholder="Type LRN to search..." autocomplete="off" maxlength="12" style="height: 40px; font-size: 15px;">
+                                    <div class="lrn-search-dropdown" id="lrnSearchDropdown"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="grade_section" id="grade-section-field" placeholder="e.g., Grade 7 - A" required autocomplete="off">
                             </td>
                         </tr>
                         <tr>
@@ -177,24 +240,24 @@
                             <td>ADDRESS: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="first_name" required autocomplete="off"> </td>
-                            <td><input type="text" name="address" required autocomplete="off"> </td>
+                            <td><input type="text" name="first_name" id="first-name-field" required autocomplete="off"> </td>
+                            <td><input type="text" name="address" id="address-field" required autocomplete="off"> </td>
                         </tr>
                         <tr>
                             <td>MIDDLE NAME: </td>
                             <td>CONTACT NO.: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="middle_name" autocomplete="off"> </td>
-                            <td><input type="number" name="contact_no" oninput="if(this.value.length > 11) this.value = this.value.slice(0, 11);" required autocomplete="off"> </td>
+                            <td><input type="text" name="middle_name" id="middle-name-field" autocomplete="off"> </td>
+                            <td><input type="number" name="contact_no" id="contact-field" oninput="if(this.value.length > 11) this.value = this.value.slice(0, 11);" required autocomplete="off"> </td>
                         </tr>
                         <tr>
                             <td>LAST NAME: </td>
                             <td>EMAIL: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="last_name" required autocomplete="off"> </td>
-                            <td><input type="email" name="email" required autocomplete="off"> </td>
+                            <td><input type="text" name="last_name" id="last-name-field" required autocomplete="off"> </td>
+                            <td><input type="email" name="email" id="email-field" required autocomplete="off"> </td>
                         </tr>
                         <tr>
                             <td>PROFILE PICTURE: </td>
@@ -209,7 +272,7 @@
                             <td>AGE: </td>
                         </tr>
                         <tr>
-                            <td><select name="gender" id="" required>
+                            <td><select name="gender" id="gender-field" required>
                                     <option value=""></option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
@@ -229,25 +292,25 @@
                             <td>GUARDIAN NAME: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="guardian_name" required> </td>
+                            <td><input type="text" name="guardian_name" id="guardian-name-field" required> </td>
                         </tr>
                         <tr>
                             <td>CONTACT NO.: </td>
                         </tr>
                         <tr>
-                            <td><input type="number" name="guardian_contact" oninput="if(this.value.length > 11) this.value = this.value.slice(0, 11);" required> </td>
+                            <td><input type="number" name="guardian_contact" id="guardian-contact-field" oninput="if(this.value.length > 11) this.value = this.value.slice(0, 11);" required> </td>
                         </tr>
                         <tr>
                             <td>ADDRESS: </td>
                         </tr>
                         <tr>
-                            <td><input type="text" name="guardian_address"> </td>
+                            <td><input type="text" name="guardian_address" id="guardian-address-field"> </td>
                         </tr>
                         <tr>
                             <td>EMAIL: </td>
                         </tr>
                         <tr>
-                            <td><input type="email" name="guardian_email"> </td>
+                            <td><input type="email" name="guardian_email" id="guardian-email-field"> </td>
                         </tr>
                     </table>
                 </div>
@@ -272,8 +335,8 @@
                         </tr>
                     </table>
                 </div>
-                <button type="submit" class="btn btn-success">Submit</button>
-                <button type="reset" class="btn btn-success" id="clearBtn">Clear</button>
+                <button type="submit" class="btn btn-success" style="float: right;">Submit</button>
+                <button type="reset" class="btn btn-success" id="clearBtn" style="float: right; margin-right: 10px;">Clear</button>
             </form>
         </main>
     </div>
@@ -311,6 +374,150 @@
                 this.value = normalized;
             });
         }
+
+        // =============================================
+        // LRN SEARCH FUNCTIONALITY
+        // =============================================
+        const lrnSearchInput = document.getElementById('lrn-search-input');
+        const lrnDropdown = document.getElementById('lrnSearchDropdown');
+        let searchTimeout = null;
+
+        // Listen for input on the LRN search field
+        lrnSearchInput.addEventListener('input', function() {
+            const lrnValue = this.value.trim();
+            clearTimeout(searchTimeout);
+
+            if (lrnValue.length < 3) {
+                lrnDropdown.style.display = 'none';
+                lrnDropdown.innerHTML = '';
+                return;
+            }
+
+            // Debounce the search to avoid too many API calls
+            searchTimeout = setTimeout(() => {
+                fetchLrnResults(lrnValue);
+            }, 300);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!lrnSearchInput.contains(e.target) && !lrnDropdown.contains(e.target)) {
+                lrnDropdown.style.display = 'none';
+            }
+        });
+
+        // Fetch matching students from the sample table via API
+        function fetchLrnResults(lrn) {
+            fetch('../process/api.php?action=search_sample&lrn=' + encodeURIComponent(lrn))
+                .then(response => response.json())
+                .then(data => {
+                    lrnDropdown.innerHTML = '';
+
+                    if (data.error) {
+                        lrnDropdown.innerHTML = '<div class="lrn-no-result">' + data.error + '</div>';
+                        lrnDropdown.style.display = 'block';
+                        return;
+                    }
+
+                    if (!data.students || data.students.length === 0) {
+                        lrnDropdown.innerHTML = '<div class="lrn-no-result">No student found with that LRN</div>';
+                        lrnDropdown.style.display = 'block';
+                        return;
+                    }
+
+                    data.students.forEach(function(student) {
+                        const item = document.createElement('div');
+                        item.className = 'lrn-result-item';
+                        item.innerHTML = '<span class="lrn-number">' + student.lrn + '</span> - <span class="lrn-name">' + student.first_name + ' ' + student.middle_name + ' ' + student.last_name + '</span>';
+                        item.addEventListener('click', function() {
+                            selectSampleStudent(student);
+                        });
+                        lrnDropdown.appendChild(item);
+                    });
+
+                    lrnDropdown.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error searching LRN:', error);
+                    lrnDropdown.innerHTML = '<div class="lrn-no-result">Error searching. Please try again.</div>';
+                    lrnDropdown.style.display = 'block';
+                });
+        }
+
+        // Populate form fields when a student is selected from dropdown
+        function selectSampleStudent(student) {
+            lrnDropdown.style.display = 'none';
+            lrnSearchInput.value = student.lrn;
+
+            // Student Information
+            // document.getElementById('lrn-field').value = student.lrn || '';
+            document.getElementById('first-name-field').value = student.first_name || '';
+            document.getElementById('middle-name-field').value = student.middle_name || '';
+            document.getElementById('last-name-field').value = student.last_name || '';
+            document.getElementById('grade-section-field').value = student.grade_section || '';
+            document.getElementById('address-field').value = student.address || '';
+            document.getElementById('contact-field').value = student.contact || '';
+            document.getElementById('email-field').value = student.email || '';
+
+            // Birth date
+            if (student.birth_date) {
+                document.getElementById('birth').value = student.birth_date;
+                // Trigger age calculation
+                birthInput.dispatchEvent(new Event('change'));
+            }
+
+            // Gender
+            const genderSelect = document.getElementById('gender-field');
+            if (student.gender) {
+                for (let i = 0; i < genderSelect.options.length; i++) {
+                    if (genderSelect.options[i].value === student.gender) {
+                        genderSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // Guardian Information
+            document.getElementById('guardian-name-field').value = student.guardian_name || '';
+            document.getElementById('guardian-contact-field').value = student.guardian_no || '';
+            document.getElementById('guardian-address-field').value = student.guardian_address || '';
+            document.getElementById('guardian-email-field').value = student.guardian_email || '';
+        }
+
+        // Clear the LRN search and reset all form fields
+        function clearLrnSearch() {
+            lrnSearchInput.value = '';
+            lrnDropdown.style.display = 'none';
+            lrnDropdown.innerHTML = '';
+
+            // Clear all form fields
+            // document.getElementById('lrn-field').value = '';
+            document.getElementById('first-name-field').value = '';
+            document.getElementById('middle-name-field').value = '';
+            document.getElementById('last-name-field').value = '';
+            document.getElementById('grade-section-field').value = '';
+            document.getElementById('address-field').value = '';
+            document.getElementById('contact-field').value = '';
+            document.getElementById('email-field').value = '';
+            document.getElementById('birth').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gender-field').selectedIndex = 0;
+            document.getElementById('guardian-name-field').value = '';
+            document.getElementById('guardian-contact-field').value = '';
+            document.getElementById('guardian-address-field').value = '';
+            document.getElementById('guardian-email-field').value = '';
+        }
+
+        // Allow Enter key to search
+        lrnSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const lrnValue = this.value.trim();
+                if (lrnValue.length >= 3) {
+                    fetchLrnResults(lrnValue);
+                }
+            }
+        });
     </script>
 
     <?php include '../include/footer.php'; ?>
